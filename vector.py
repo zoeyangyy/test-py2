@@ -1,3 +1,5 @@
+import numpy as np
+
 class Vector2(object):
     def __init__(self, x=0.0, y=0.0):
         self.x = x
@@ -16,3 +18,4 @@ B = (30.0, 35.0)
 vec = Vector2()
 AB = vec.from_points(A, B)
 print(AB)
+

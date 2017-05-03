@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import numpy as np
+import timeit
 
 # w = np.random.randn(10, 5) * 0.001
 
@@ -11,8 +12,30 @@ x = np.matrix([[1,2,3,4],[5,6,7,8]]).T
 y = np.array([1,2])
 
 W = np.random.rand(3, 4) * 0.1
-print W
 
+
+def timeitfun1():
+    N = 500
+    d = 300
+    C = 5
+    W1 = np.random.rand(C, d)
+    wordvectors_list = [np.random.rand(d, 1) for i in range(N)]
+    [W1.dot(wordvectors_list[i]) for i in range(N)]
+
+
+def timeitfun2():
+    N = 500
+    d = 300
+    C = 5
+    W1 = np.random.rand(C, d)
+    wordvectors_one_matrix = np.random.rand(d, N)
+    W1.dot(wordvectors_one_matrix)
+
+def comparetime():
+    print(timeit.timeit(stmt=timeitfun1, number=1000))
+    print(timeit.timeit(stmt=timeitfun2, number=1000))
+
+comparetime()
 
 def L_i(x, y, W):
     # unvectorized version
@@ -50,8 +73,8 @@ def L(x, y, W):
     return loss_i / scores.shape[0]
 
 
-print (L_i(x1, 1, W) + L_i(x2, 2, W))/2
-print L(x, y, W)
+# print (L_i(x1, 1, W) + L_i(x2, 2, W))/2
+# print L(x, y, W)
 
 
 def eval_numerical_gradient(f, x):
@@ -59,7 +82,7 @@ def eval_numerical_gradient(f, x):
     grad = np.zeros(x.shape)
     h = 0.001
 
-    it = np.nditer(x, flags=['multi_index'],op_flags=['readwrite'])
+    it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
     while not it.finished:
 
         ix = it.multi_index
@@ -78,10 +101,13 @@ def CIFAR10_loss_fun(W):
     return L(x, y, W)
 
 
-origin = 0
-while abs(L(x, y, W) - origin) > 0.01:
-    origin = L(x, y, W)
-    df = eval_numerical_gradient(CIFAR10_loss_fun, W)
-    W -= 0.01 * df
+def updating_fun(W):
+    origin = 0
+    while abs(L(x, y, W) - origin) > 1:
+        origin = L(x, y, W)
+        df = eval_numerical_gradient(CIFAR10_loss_fun, W)
+        W -= 0.01 * df
+    print origin
 
-print origin
+
+
